@@ -30,6 +30,5 @@ const MovieCard = ({ movie }: { movie: movieType }) => {
     </Link>
   );
 };
-//  display: flex; padding: var(--spacing-2, 8px); flex-direction: column;
-//           align-items: flex-start; align-self: stretch;
+
 export default MovieCard;
