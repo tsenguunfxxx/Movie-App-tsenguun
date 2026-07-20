@@ -17,7 +17,7 @@ const MovieCard = ({ movie }: { movie: movieType }) => {
             className="h-[340px] w-full     object-contain object-fill"
           />
 
-          <div className="w-[280px] h-[95px] flex flex-col p-2  object-cover  ">
+          <div className="w-[280px] h-[95px] flex flex-col p-2   object-cover  ">
             <p className=" flex items-center gap-1 text-gray-400">
               <Star fill="yellow" stroke="yellow" />
               <span className="text-black">{movie.vote_average}</span>

@@ -40,7 +40,7 @@ export const GroupMovie = ({ title }: { title: string }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-5 gap-[32px] justify-items-center ">
+        <div className="grid grid-cols-4 gap-[32px] justify-items-center ">
           {movies.map((movie) => {
             return <MovieCard key={movie.id} movie={movie} />;
           })}
