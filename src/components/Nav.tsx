@@ -1,51 +1,34 @@
 "use client";
-import Image from "next/image";
-import { ChevronDown } from "lucide-react";
-import { Button } from "./ui/button";
+
+import { Film } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+
+import { GenreDropdown } from "./GenreDropdown";
+import { Searchbar } from "./Searchbar";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
-import { useState } from "react";
 
 function Nav() {
-  const searchParams = useSearchParams();
-  const search = searchParams.get("name");
-  const router = useRouter();
-  const [value, setValue] = useState("");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
-
-  const handleClick = () => {
-    router.push(`/new-search?name=${value}`);
-  };
-
   return (
-    <div className="flex justify-between w-full p-5">
-      <div className="flex items-center gap-1">
-        <Image src="/film.svg" alt="film" width={20} height={20} />
-        <div className="text-[#4338CA] text-[16px]">
-          <Link href="/">Movie Z</Link>
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
+      <div className="mx-auto flex h-14 w-full max-w-[1440px] items-center justify-between gap-4 px-5">
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-2 text-[#4338CA]"
+        >
+          <Film className="size-5" />
+          <span className="text-base font-bold italic">Movie Z</span>
+        </Link>
+
+        <div className="flex flex-1 items-center justify-center gap-3">
+          <div className="hidden sm:block">
+            <GenreDropdown />
+          </div>
+          <Searchbar />
         </div>
+
+        <AnimatedThemeToggler className="flex size-9 shrink-0 items-center justify-center rounded-md border [&_svg]:size-4" />
       </div>
-      <div className="flex items-center gap-3">
-        <button className="flex items-center gap-2 px-4 py-2 border rounded-lg text-[14px]">
-          <ChevronDown className="w-4 h-4 rounded-md" />
-          Genre
-        </button>
-        <div className="flex gap-2">
-          Search: {search}
-          <input type="text" onChange={handleChange} className="border-2" />
-          <button className="border-2" onClick={handleClick}>
-            Search
-          </button>
-        </div>
-      </div>
-      <Button className="w-[36px] h-[36px] border rounded-[10px] flex items-center justify-center">
-        <AnimatedThemeToggler />
-      </Button>
-    </div>
+    </header>
   );
 }
 

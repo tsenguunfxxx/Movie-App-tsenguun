@@ -1,51 +1,53 @@
-import MovieCard from "./MovieCard";
-import type { movieType } from "@/app/page";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { ChevronRight } from "lucide-react";
-export const GroupMovie = ({ title }: { title: string }) => {
-  const router = useRouter();
-  const [movies, setMovies] = useState<movieType[]>([]);
-  const pushToSeeMore = () => {
-    router.push(title);
-  };
-  useEffect(() => {
-    axios
-      .get(
-        `https://api.themoviedb.org/3/movie/${title}?language=en-US&page=1`,
-        {
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2NzA3NmFmYTA4NDE3MDU4ZDc3N2VmZmUxZGIwZmZlYyIsIm5iZiI6MTc3OTI1NDczMi41NTgsInN1YiI6IjZhMGQ0NWNjMmM1NTk4ZmY4MTViZDNjNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.E5kk_kSFXvEc_eBnNUXl4kSWgBhYohoNw96Om1upV08",
-          },
-        },
-      )
-      .then((reponse) => {
-        setMovies(reponse.data.results);
-      });
-  }, [title]);
-  console.log(movies);
-  return (
-    <div className="w-full flex flex-col gap-[52px]">
-      <div className="flex flex-col gap-[32px]">
-        <div className="w-full flex justify-between px-[50px]">
-          <p className="text-[24px] uppercase tracking-tight font-black">
-            {title}
-          </p>
-          <p>
-            <button type="button" className="flex" onClick={pushToSeeMore}>
-              See more <ChevronRight />
-            </button>
-          </p>
-        </div>
+"use client";
 
-        <div className="grid grid-cols-4 gap-[32px] justify-items-center ">
-          {movies.map((movie) => {
-            return <MovieCard key={movie.id} movie={movie} />;
-          })}
-        </div>
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import MovieCard from "./MovieCard";
+import { CATEGORY_LABELS, type movieType, tmdb } from "@/lib/tmdb";
+
+export const GroupMovie = ({ title }: { title: string }) => {
+  const [movies, setMovies] = useState<movieType[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    tmdb
+      .get(`/movie/${title}`, { params: { page: 1 } })
+      .then((response) => {
+        if (!cancelled) setMovies(response.data.results.slice(0, 10));
+      })
+      .catch((error) => {
+        console.error(`${title} татахад алдаа гарлаа:`, error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [title]);
+
+  return (
+    <section className="flex w-full flex-col gap-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {CATEGORY_LABELS[title] ?? title}
+        </h2>
+
+        <Link
+          href={`/${title}`}
+          className="flex items-center gap-1 text-sm hover:underline"
+        >
+          See more
+          <ChevronRight className="size-4" />
+        </Link>
       </div>
-    </div>
+
+      <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+        {movies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
+    </section>
   );
 };

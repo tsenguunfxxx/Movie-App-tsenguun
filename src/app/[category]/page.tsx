@@ -1,155 +1,72 @@
 "use client";
 
-import MovieCard from "@/components/MovieCard";
-import type { movieType } from "@/app/page";
+import { notFound, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { ChevronRight } from "lucide-react";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-import { useParams } from "next/navigation";
+import { Footer } from "@/components/Footer";
+import MovieCard from "@/components/MovieCard";
+import { MoviePagination } from "@/components/MoviePagination";
 import Nav from "@/components/Nav";
+import {
+  CATEGORY_LABELS,
+  type MoviesResponse,
+  tmdb,
+} from "@/lib/tmdb";
 
-type MoviesResponse = {
-  results: movieType[];
-  total_pages: number;
-};
+const CategoryPage = () => {
+  const params = useParams<{ category: string }>();
+  const category = params.category;
 
-const Upcoming = () => {
-  const params = useParams();
   const [page, setPage] = useState(1);
-
-  const [movies, setMovies] = useState<MoviesResponse>({
-    results: [],
-    total_pages: 0,
-  });
+  const [data, setData] = useState<MoviesResponse | null>(null);
 
   useEffect(() => {
-    axios
-      .get(
-        `https://api.themoviedb.org/3/movie/${params.category}?language=en-US&page=${page}`,
-        {
-          headers: {
-            Authorization: `Bearer YOUR_TOKEN`,
-          },
-        },
-      )
+    if (!CATEGORY_LABELS[category]) return;
+
+    let cancelled = false;
+
+    tmdb
+      .get(`/movie/${category}`, { params: { page } })
       .then((response) => {
-        setMovies(response.data);
-      });
-  }, [page, params.category]);
+        if (!cancelled) setData(response.data);
+      })
+      .catch((error) => console.error("Кино татахад алдаа гарлаа:", error));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [page, category]);
+
+  if (!CATEGORY_LABELS[category]) notFound();
+
+  // TMDB нь 500-аас цаашгүй хуудас өгдөг.
+  const totalPages = Math.min(data?.total_pages ?? 1, 500);
 
   return (
-    <div className="w-full flex flex-col gap-[52px]">
+    <div className="flex min-h-screen flex-col">
       <Nav />
 
-      <div className="flex flex-col gap-[32px]">
-        <div className="w-full flex justify-between px-[50px]">
-          <p className="text-[24px] uppercase tracking-tight font-black">
-            {params.category}
-          </p>
+      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-8 px-5 py-8 md:px-20">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {CATEGORY_LABELS[category]}
+        </h1>
 
-          <button type="button" className="flex items-center">
-            See more <ChevronRight />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-5 gap-[32px] justify-items-center">
-          {movies.results.map((movie) => (
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+          {data?.results.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
-      </div>
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={() => page > 1 && setPage(page - 1)}
-            />
-          </PaginationItem>
+        <MoviePagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </main>
 
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              onClick={() => setPage(Math.max(page - 1, 1))}
-            >
-              {Math.max(page - 1, 1)}
-            </PaginationLink>
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              {page}
-            </PaginationLink>
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              onClick={() => setPage(Math.min(page + 1, movies.total_pages))}
-            >
-              {Math.min(page + 1, movies.total_pages)}
-            </PaginationLink>
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              onClick={() => setPage(movies.total_pages)}
-            >
-              {movies.total_pages}
-            </PaginationLink>
-          </PaginationItem>
-
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={() => page < movies.total_pages && setPage(page + 1)}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <Footer />
     </div>
   );
 };
 
-export default Upcoming;
-//  <PaginationLink onClick={nextPage} href="#" isActive={page === 1}>
-//               1
-//             </PaginationLink>
-//           </PaginationItem>
-//           <PaginationItem>
-//             <PaginationLink onClick={nextPage} href="#" isActive={page === 2}>
-//               2
-//             </PaginationLink>
-//           </PaginationItem>
-//           <PaginationItem>
-//             <PaginationLink onClick={nextPage} href="#" isActive={page === 3}>
-//               3
-//             </PaginationLink>
-//   );
-//  {Array.from({ length: movies?.total_pages }).map((_, index) => {
-//               return (
-//                 <PaginationItem className="flex" key={index + Math.random()}>
-//                   <PaginationLink
-//                     onClick={() => setPage(index + 1)}
-//                     href="#"
-//                     isActive={page === 1}
-//                   >
-//                     {index + 1}
-// })}
+export default CategoryPage;

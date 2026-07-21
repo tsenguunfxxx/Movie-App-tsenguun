@@ -1,51 +1,52 @@
-import { Phone } from "lucide-react";
-import { Mail } from "lucide-react";
+import { Film, Mail, Phone } from "lucide-react";
+
+const SOCIALS = ["Facebook", "Instagram", "Twitter", "Youtube"];
+
 export function Footer() {
   return (
-    <div className="w-Full h-[280px] bg-[#4338CA] flex justify-center items-center text-white">
-      <div className="w-[1280px] h-[200px ] flex gap-[120px]">
-        <div className="w-[247px] h-[200px]">
-          <div className="w-[247px] h-[20px] gap-[12px]">
-            {" "}
-            <p>Movie Z</p>
-            <p className="text-[10px] ">© 2024 Movie Z. All Rights Reserved.</p>
+    <footer className="mt-14 w-full bg-[#4338CA] text-white">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-10 px-5 py-10 md:flex-row md:justify-between md:py-16">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <Film className="size-5" />
+            <span className="text-base font-bold italic">Movie Z</span>
           </div>
+          <p className="text-xs text-white/80">
+            © 2024 Movie Z. All Rights Reserved.
+          </p>
         </div>
-        <div className="w-[913px] h-[200px] flex justify-end items-start gap-[96px]">
-          {" "}
-          <div className="w-[174px] h-[200px] flex flex-col gap-[20px]">
-            {" "}
-            <p>Contact Information</p>
-            <div className="w-[174px] h-[40px] flex items-center gap-[12px] ">
-              <div>
-                <Mail className="w-[15px] h-[15px]"></Mail>
-              </div>
-              <div>
-                <p>Email:</p>
-                <p>support@movieZ.com</p>
+
+        <div className="flex flex-col gap-10 sm:flex-row sm:gap-24">
+          <div className="flex flex-col gap-5">
+            <p className="text-sm">Contact Information</p>
+
+            <div className="flex items-center gap-3">
+              <Mail className="size-4 shrink-0" />
+              <div className="text-xs">
+                <p className="font-semibold">Email:</p>
+                <p className="text-white/80">tsenguunzx@gmail.com</p>
               </div>
             </div>
-            <div className="w-[200px] h-[40px] flex items-center gap-[12px] ">
-              <div>
-                <Phone className="w-[15px] h-[15px]"></Phone>
-              </div>
-              <div>
-                <p>Phone:</p>
-                <p>+976 (11) 123-4567</p>
+
+            <div className="flex items-center gap-3">
+              <Phone className="size-4 shrink-0" />
+              <div className="text-xs">
+                <p className="font-semibold">Phone:</p>
+                <p className="text-white/80">+976 85129161</p>
               </div>
             </div>
           </div>
-          <div className="w-[274px] h-[72px]">
-            <p>Follow us</p>
-            <div className="flex gap-[12px]">
-              <p>Facebook</p>
-              <p>Instagram</p>
-              <p>Twitter</p>
-              <p>Youtube</p>
+
+          <div className="flex flex-col gap-5">
+            <p className="text-sm">Follow us</p>
+            <div className="flex flex-wrap gap-3 text-xs text-white/90">
+              {SOCIALS.map((social) => (
+                <span key={social}>{social}</span>
+              ))}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 }
